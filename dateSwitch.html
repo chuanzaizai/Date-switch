@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>new date()标准时间转yyyy-mm-dd hh:mm 24小时制</title>
+	<meta charset="utf-8" />
+	<meta name="author" content="xusong" />
+</head>
+<body>
+
+	<script type="text/javascript">
+
+		// 扩充js的内置对象Date方法
+		Object.assign(Date.prototype, {
+			switch(time) {
+				let date = {  
+	       		  "yy": this.getFullYear(),
+	       		  // 这里月份的key采用大写，为了区别分钟的key
+	              "MM": this.getMonth() + 1,  
+	              "dd": this.getDate(),  
+	              "hh": this.getHours(),  
+	              "mm": this.getMinutes(),  
+	              "ss": this.getSeconds()
+		        };  
+		        //输出年 y+:匹配1个到多个y,i:忽略大小写
+		        if (/(y+)/i.test(time)) {  
+		            time = time.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));  
+		        }  
+		        //输出月、日、时、分、秒
+		        Object.keys(date).forEach(function(i){
+		        	//  "(" + i + ")"的结果是字符串"(i+)",
+		       	    // 只有写成"(" + i + ")"形式，才能在正则表达式中捕获子匹配，进而才能用到RegExp.$1的值
+		        	if (new RegExp("(" + i + ")").test(time)) { 
+		              	// 判断，如果时间为一位数，则在前面加'0' 
+		              	// ps：这里有一个小知识点：number类型+string类型 = string类型
+		              	if(RegExp.$1.length == 2){
+		              		date[i] < 10 ? date[i] = '0' + date[i]: date[i];
+		              	}
+		              	//替换初始化函数时候传入yyyy-mm-dd hh:mm:ss(这里可以打印出time、RegExp.$1、date[k])
+		              	time = time.replace(RegExp.$1, date[i]); 
+		            }  
+		        })
+		        return time;  
+			}
+		})
+
+		let newDate = new Date();
+		// newDate.switch()传参的大小写要和方法内定义的key匹配
+	    document.write(newDate.switch('yyyy-MM-dd hh:mm:ss'));  
+	    //结果为：2017-03-24 20:24:36
+	    document.write(newDate.switch('yyyy-MM-dd'));  
+	    //结果为：2017-03-24
+
+	</script>
+</body>
+</html>
